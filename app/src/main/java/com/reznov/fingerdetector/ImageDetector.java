@@ -79,17 +79,17 @@ public class ImageDetector extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "مشکل در بارگزاری مدل هوش مصنوعی", Toast.LENGTH_SHORT).show();
         } else {
 //            String tinyYoloCfg = Environment.getExternalStorageDirectory() + "/dnns/yolov4-fingers.cfg";
-            String tinyYoloCfg = Environment.getExternalStorageDirectory() + "/dnns/m-conf.cfg";
+            String tinyYoloCfg = Environment.getExternalStorageDirectory() + "/dnns/yolov4-10000.cfg";
 //            String tinyYoloWeights = Environment.getExternalStorageDirectory() + "/dnns/custom-yolov4-tiny-detector_best.weights";
-            String tinyYoloWeights = Environment.getExternalStorageDirectory() + "/dnns/yolov4-tiny.weights";
+            String tinyYoloWeights = Environment.getExternalStorageDirectory() + "/dnns/yolov4-10000.weights";
 
             tinyYolo = Dnn.readNetFromDarknet(tinyYoloCfg, tinyYoloWeights);
         }
     }
 
     void loadImage(View view) {
-//        bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/test-model/three_2.jpg");
-        bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/test-model/test.jpg");
+        bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/test-model/three_2.jpg");
+//        bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/test-model/test.jpg");
         imgPreview.setImageBitmap(bitmap);
     }
 
@@ -158,8 +158,8 @@ public class ImageDetector extends AppCompatActivity {
                 Rect box = boxesArray[idx];
                 int idGuy = clsIds.get(idx);
                 float conf = confs.get(idx);
-                    List<String> cocoNames = Arrays.asList("a person", "a bicycle", "a motorbike", "an airplane", "a bus", "a train", "a truck", "a boat", "a traffic light", "a fire hydrant", "a stop sign", "a parking meter", "a car", "a bench", "a bird", "a cat", "a dog", "a horse", "a sheep", "a cow", "an elephant", "a bear", "a zebra", "a giraffe", "a backpack", "an umbrella", "a handbag", "a tie", "a suitcase", "a frisbee", "skis", "a snowboard", "a sports ball", "a kite", "a baseball bat", "a baseball glove", "a skateboard", "a surfboard", "a tennis racket", "a bottle", "a wine glass", "a cup", "a fork", "a knife", "a spoon", "a bowl", "a banana", "an apple", "a sandwich", "an orange", "broccoli", "a carrot", "a hot dog", "a pizza", "a doughnut", "a cake", "a chair", "a sofa", "a potted plant", "a bed", "a dining table", "a toilet", "a TV monitor", "a laptop", "a computer mouse", "a remote control", "a keyboard", "a cell phone", "a microwave", "an oven", "a toaster", "a sink", "a refrigerator", "a book", "a clock", "a vase", "a pair of scissors", "a teddy bear", "a hair drier", "a toothbrush");
-//                List<String> cocoNames = Arrays.asList("one", "two", "three", "four", "five");
+//                    List<String> cocoNames = Arrays.asList("a person", "a bicycle", "a motorbike", "an airplane", "a bus", "a train", "a truck", "a boat", "a traffic light", "a fire hydrant", "a stop sign", "a parking meter", "a car", "a bench", "a bird", "a cat", "a dog", "a horse", "a sheep", "a cow", "an elephant", "a bear", "a zebra", "a giraffe", "a backpack", "an umbrella", "a handbag", "a tie", "a suitcase", "a frisbee", "skis", "a snowboard", "a sports ball", "a kite", "a baseball bat", "a baseball glove", "a skateboard", "a surfboard", "a tennis racket", "a bottle", "a wine glass", "a cup", "a fork", "a knife", "a spoon", "a bowl", "a banana", "an apple", "a sandwich", "an orange", "broccoli", "a carrot", "a hot dog", "a pizza", "a doughnut", "a cake", "a chair", "a sofa", "a potted plant", "a bed", "a dining table", "a toilet", "a TV monitor", "a laptop", "a computer mouse", "a remote control", "a keyboard", "a cell phone", "a microwave", "an oven", "a toaster", "a sink", "a refrigerator", "a book", "a clock", "a vase", "a pair of scissors", "a teddy bear", "a hair drier", "a toothbrush");
+                List<String> cocoNames = Arrays.asList("one", "two", "three", "four", "five");
                 int intConf = (int) (conf * 100);
                 Imgproc.putText(mat, cocoNames.get(idGuy) + " " + intConf + "%", box.tl(), 0, 2, new Scalar(255, 255, 0), 2);
                 Log.d("rrrr", "class neme : " + cocoNames.get(idGuy));

@@ -22,8 +22,10 @@ import org.opencv.*;
 import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfRect;
+import org.opencv.core.MatOfRect2d;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
+import org.opencv.core.Rect2d;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.dnn.Net;
@@ -129,9 +131,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             java.util.List<Mat> result = new java.util.ArrayList<Mat>(3);
 
             List<String> outBlobNames = new java.util.ArrayList<>();
-            outBlobNames.add(0, "yolo_139");
-            outBlobNames.add(1, "yolo_150");
-            outBlobNames.add(2, "yolo_161");
+//            outBlobNames.add(0, "yolo_139");
+//            outBlobNames.add(1, "yolo_150");
+//            outBlobNames.add(2, "yolo_161");
+            outBlobNames.add(0, "yolo_30");
+            outBlobNames.add(1, "yolo_37");
 
             tinyYolo.forward(result, outBlobNames);
 
@@ -142,42 +146,27 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             List<Integer> clsIds = new ArrayList<>();
             List<Float> confs = new ArrayList<>();
             List<Rect> rects = new ArrayList<>();
-
-            Log.d("rrrr", "onCameraFrame: result size"+result.size());
-
-
+            List<Rect2d> rect2ds = new ArrayList<>();
+            Log.d("rrrr", "onCameraFrame: result size" + result.size());
             for (int i = 0; i < result.size(); ++i) {
-
                 Mat level = result.get(i);
-
                 for (int j = 0; j < level.rows(); ++j) {
                     Mat row = level.row(j);
                     Mat scores = row.colRange(5, level.cols());
-
                     Core.MinMaxLocResult mm = Core.minMaxLoc(scores);
-
-
                     float confidence = (float) mm.maxVal;
-
-
                     Point classIdPoint = mm.maxLoc;
-
-
                     if (confidence > confThreshold) {
                         int centerX = (int) (row.get(0, 0)[0] * frame.cols());
                         int centerY = (int) (row.get(0, 1)[0] * frame.rows());
                         int width = (int) (row.get(0, 2)[0] * frame.cols());
                         int height = (int) (row.get(0, 3)[0] * frame.rows());
-
-
                         int left = centerX - width / 2;
                         int top = centerY - height / 2;
-
                         clsIds.add((int) classIdPoint.x);
                         confs.add((float) confidence);
-
-
                         rects.add(new Rect(left, top, width, height));
+                        rect2ds.add(new Rect2d(centerX, centerY, width, height));
                     }
                 }
             }
@@ -196,12 +185,15 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
                 Rect[] boxesArray = rects.toArray(new Rect[0]);
 
-                MatOfRect boxes = new MatOfRect(boxesArray);
+//                MatOfRect boxes = new MatOfRect(boxesArray);
+
+                MatOfRect2d matOfRect2d = new MatOfRect2d(rect2ds.toArray(new Rect2d[0]));
+
 
                 MatOfInt indices = new MatOfInt();
 
 
-//                Dnn.NMSBoxes(boxes, confidences, confThreshold, nmsThresh, indices);
+                Dnn.NMSBoxes(matOfRect2d, confidences, confThreshold, nmsThresh, indices);
 
 
                 // Draw result boxes:
@@ -275,8 +267,13 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         if (!OpenCVLoader.initDebug()) {
             Toast.makeText(getApplicationContext(), "There's a problem, yo!", Toast.LENGTH_SHORT).show();
         } else {
-            String tinyYoloCfg = Environment.getExternalStorageDirectory() + "/dnns/yolov4-fingers.cfg";
-            String tinyYoloWeights = Environment.getExternalStorageDirectory() + "/dnns/custom-yolov4-tiny-detector_best.weights";
+//            String tinyYoloCfg = Environment.getExternalStorageDirectory() + "/dnns/yolov4-fingers.cfg";
+//            String tinyYoloWeights = Environment.getExternalStorageDirectory() + "/dnns/custom-yolov4-tiny-detector_best.weights";
+
+            //            String tinyYoloCfg = Environment.getExternalStorageDirectory() + "/dnns/yolov4-fingers.cfg";
+            String tinyYoloCfg = Environment.getExternalStorageDirectory() + "/dnns/yolov4-10000.cfg";
+//            String tinyYoloWeights = Environment.getExternalStorageDirectory() + "/dnns/custom-yolov4-tiny-detector_best.weights";
+            String tinyYoloWeights = Environment.getExternalStorageDirectory() + "/dnns/yolov4-10000.weights";
 
             tinyYolo = Dnn.readNetFromDarknet(tinyYoloCfg, tinyYoloWeights);
             startYolo = true;
