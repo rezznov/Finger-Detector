@@ -1,2 +1,3 @@
 rootProject.name = "FingerDetector"
 include ':app'
+include ':openCv'

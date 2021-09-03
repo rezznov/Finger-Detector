@@ -1,0 +1,4 @@
+#Fri Sep 03 10:54:00 IRDT 2021
+base.0=/home/reznov/university/app-project/finger-detector/opencv/build/intermediates/dex/debug/mergeDexDebug/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
