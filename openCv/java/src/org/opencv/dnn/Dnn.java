@@ -931,7 +931,7 @@ public class Dnn {
      * @param nms_threshold a threshold used in non maximum suppression.
      * @param indices the kept indices of bboxes after NMS.
      */
-    public static void NMSBoxes(MatOfRect bboxes, MatOfFloat scores, float score_threshold, float nms_threshold, MatOfInt indices) {
+    public static void NMSBoxes(MatOfRect2d bboxes, MatOfFloat scores, float score_threshold, float nms_threshold, MatOfInt indices) {
         Mat bboxes_mat = bboxes;
         Mat scores_mat = scores;
         Mat indices_mat = indices;

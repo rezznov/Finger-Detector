@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 MatOfInt indices = new MatOfInt();
 
 
-                Dnn.NMSBoxes(boxes, confidences, confThreshold, nmsThresh, indices);
+//                Dnn.NMSBoxes(boxes, confidences, confThreshold, nmsThresh, indices);
 
 
                 // Draw result boxes:
