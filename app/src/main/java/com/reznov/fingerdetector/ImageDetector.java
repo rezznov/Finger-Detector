@@ -1,9 +1,14 @@
 package com.reznov.fingerdetector;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -33,6 +39,7 @@ import org.opencv.dnn.Net;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,12 +56,17 @@ public class ImageDetector extends AppCompatActivity {
 
     Bitmap bitmap;
 
+    File photo;
+
+    Uri photoUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_detector);
 
         initView();
+        photo = new File(Environment.getExternalStorageDirectory(), "Pic.jpg");
 
     }
 
@@ -64,7 +76,14 @@ public class ImageDetector extends AppCompatActivity {
         imgPreview = findViewById(R.id.imgPreivew);
         imgConverted = findViewById(R.id.imgConverted);
 
-        loadBtn.setOnClickListener(this::loadImage);
+        loadBtn.setOnClickListener(v -> {
+
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//            photoUri = Uri.fromFile(photo);
+            photoUri = FileProvider.getUriForFile(ImageDetector.this, BuildConfig.APPLICATION_ID + ".provider",photo);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT,photoUri);
+            startActivityForResult(intent, 100);
+        });
         convertButton.setOnClickListener(this::convertImage);
     }
 
@@ -87,13 +106,13 @@ public class ImageDetector extends AppCompatActivity {
         }
     }
 
-    void loadImage(View view) {
-        bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/test-model/three_2.jpg");
-//        bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/test-model/test.jpg");
+    void loadImage() {
+//        bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/test-model/three_2.jpg");
+        bitmap = Bitmap.createScaledBitmap(rotateImage(BitmapFactory.decodeFile(photo.getAbsolutePath()), 90), 416, 416, true);
         imgPreview.setImageBitmap(bitmap);
     }
 
-    void convertImage(View view){
+    void convertImage(View view) {
         Bitmap result = convert(bitmapToMat(bitmap));
         imgConverted.setImageBitmap(result);
     }
@@ -135,7 +154,7 @@ public class ImageDetector extends AppCompatActivity {
                     clsIds.add((int) classIdPoint.x);
                     confs.add((float) confidence);
                     rects.add(new Rect(left, top, width, height));
-                    rect2ds.add(new Rect2d(centerX,centerY,width,height));
+                    rect2ds.add(new Rect2d(centerX, centerY, width, height));
                 }
             }
         }
@@ -171,15 +190,16 @@ public class ImageDetector extends AppCompatActivity {
 
     Bitmap matToBitmap(Mat mat) {
         Bitmap bmp = null;
-        Mat tmp = new Mat (mat.rows(), mat.cols(), CvType.CV_8U, new Scalar(4));
+        Mat tmp = new Mat(mat.rows(), mat.cols(), CvType.CV_8U, new Scalar(4));
         try {
             //Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_RGB2BGRA);
             Imgproc.cvtColor(mat, tmp, Imgproc.COLOR_RGBA2RGB);
             bmp = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(tmp, bmp);
             return bmp;
+        } catch (CvException e) {
+            Log.d("Exception", e.getMessage());
         }
-        catch (CvException e){Log.d("Exception",e.getMessage());}
         return null;
     }
 
@@ -188,5 +208,19 @@ public class ImageDetector extends AppCompatActivity {
         Bitmap bmp32 = bitmap.copy(Bitmap.Config.ARGB_8888, true);
         Utils.bitmapToMat(bmp32, mat);
         return mat;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if ((resultCode == Activity.RESULT_OK) && requestCode == 100)
+            loadImage();
+    }
+
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
     }
 }

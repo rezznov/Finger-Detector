@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
 
 //            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(170, 170), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
-            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(256, 256), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
+            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(352, 352), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
 //            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(416, 416), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
 
 
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             tinyYolo.forward(result, outBlobNames);
 
 
-            float confThreshold = 0.1f;
+            float confThreshold = 0.3f;
 
 
             List<Integer> clsIds = new ArrayList<>();
