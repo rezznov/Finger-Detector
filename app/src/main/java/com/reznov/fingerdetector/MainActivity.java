@@ -46,30 +46,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     CameraBridgeViewBase cameraBridgeViewBase;
     BaseLoaderCallback baseLoaderCallback;
     boolean startYolo = false;
-    boolean firstTimeYolo = false;
     Net tinyYolo;
-
-
-    public void actionButton(View Button) {
-
-//        if (!startYolo) {
-//
-//
-//            if (!firstTimeYolo) {
-//                firstTimeYolo = true;
-//                String tinyYoloCfg = Environment.getExternalStorageDirectory() + "/dnns/yolov4-fingers.cfg";
-//                String tinyYoloWeights = Environment.getExternalStorageDirectory() + "/dnns/custom-yolov4-tiny-detector_best.weights";
-//
-//                tinyYolo = Dnn.readNetFromDarknet(tinyYoloCfg, tinyYoloWeights);
-//
-//                startYolo = true;
-//            }
-//
-//        } else {
-//            startYolo = false;
-//        }
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,14 +90,20 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
-        Mat frame = inputFrame.rgba();
+        Mat frame2 = inputFrame.rgba();
 
-        if (startYolo == true) {
+        Mat frame = frame2.t();
+        Core.flip(frame2.t(), frame, 1);
+        Imgproc.resize(frame, frame, frame2.size());
+
+        if (startYolo) {
+//        if (false) {
 
             Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2RGB);
 
 
-            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(416, 416), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
+//            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(170, 170), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
+            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(256, 256), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
 //            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(416, 416), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
 
 
